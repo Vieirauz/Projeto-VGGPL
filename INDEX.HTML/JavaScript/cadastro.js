@@ -1,8 +1,8 @@
-// ===============================
-// 📋 Função principal de validação e envio
-// ===============================
+// ------------------
+// Validação e envio
+// ------------------
 async function validarCadastro(event) {
-  if (event) event.preventDefault(); // evita submit automático
+  event?.preventDefault();
 
   const form = document.getElementById("cadastroForm");
   const erro = document.getElementById("mensagem");
@@ -14,124 +14,91 @@ async function validarCadastro(event) {
     "login", "senha", "confirmarSenha"
   ];
 
-  const valores = {};
-  campos.forEach(c => valores[c] = document.getElementById(c)?.value.trim() || "");
+  const valores = Object.fromEntries(
+    campos.map(c => [c, document.getElementById(c)?.value.trim() || ""])
+  );
 
-  // === Validações ===
-  if (valores.nome.length < 10) { erro.textContent = "Nome inválido."; return; }
-  if (!valores.nascimento) { erro.textContent = "Data de nascimento inválida."; return; }
-  if (!valores.sexo) { erro.textContent = "Selecione o gênero."; return; }
-  if (valores.nomeMaterno.length < 10) { erro.textContent = "Nome materno inválido."; return; }
+  if (valores.nome.length < 10) return erro.textContent = "Nome inválido.";
+  if (!valores.nascimento) return erro.textContent = "Data de nascimento inválida.";
+  if (!valores.sexo) return erro.textContent = "Selecione o gênero.";
+  if (valores.nomeMaterno.length < 10) return erro.textContent = "Nome materno inválido.";
 
-  const cpfNum = valores.cpf.replace(/\D/g, "");
-  if (!validarCPF(cpfNum)) { erro.textContent = "CPF inválido."; return; }
+  if (!validarCPF(valores.cpf.replace(/\D/g, "")))
+    return erro.textContent = "CPF inválido.";
 
-  if (valores.senha.length < 6) {
-    erro.textContent = "A senha deve ter pelo menos 6 caracteres.";
-    return;
-  }
+  if (valores.senha.length < 6)
+    return erro.textContent = "A senha deve ter pelo menos 6 caracteres.";
 
-  if (valores.senha !== valores.confirmarSenha) {
-    erro.textContent = "As senhas não coincidem.";
-    return;
-  }
+  if (valores.senha !== valores.confirmarSenha)
+    return erro.textContent = "As senhas não coincidem.";
 
-  // === Montar envio para o PHP ===
   const formData = new FormData();
-  for (const campo in valores) {
-    formData.append(campo, valores[campo]);
-  }
+  for (const c in valores) formData.append(c, valores[c]);
 
   try {
-    const resposta = await fetch("salvar_cadastro.php", {
-      method: "POST",
-      body: formData
-    });
+    const res = await fetch("salvar_cadastro.php", { method: "POST", body: formData });
+    const r = await res.text();
 
-    const resultado = await resposta.text();
-
-    if (resultado.includes("✅")) {
+    if (r.includes("✅")) {
       alert("Cadastro realizado com sucesso!");
       form.reset();
-      window.location.href = "login.html";
-    } else {
-      erro.textContent = resultado;
-    }
+      location.href = "login.html";
+    } else erro.textContent = r;
 
-  } catch (e) {
+  } catch {
     erro.textContent = "Erro ao conectar com o servidor.";
   }
 }
 
-// ===============================
-// ✅ Validação de CPF
-// ===============================
+// ------------------
+// Validação CPF
+// ------------------
 function validarCPF(cpf) {
-  cpf = cpf.replace(/\D/g, "");
+  if (!/^\d{11}$/.test(cpf) || /^(\d)\1+$/.test(cpf)) return false;
 
-  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+  const calc = (len) => {
+    let soma = 0;
+    for (let i = 0; i < len; i++) soma += parseInt(cpf[i]) * (len + 1 - i);
+    let r = (soma * 10) % 11;
+    return r === 10 ? 0 : r;
+  };
 
-  let soma = 0;
-  for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
-  let resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpf.charAt(9))) return false;
-
-  soma = 0;
-  for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-
-  return resto === parseInt(cpf.charAt(10));
+  return calc(9) === +cpf[9] && calc(10) === +cpf[10];
 }
 
-// ===============================
-// 🏠 Auto preenchimento de endereço pelo CEP
-// ===============================
+// ------------------
+// Auto CEP
+// ------------------
 document.getElementById("cep")?.addEventListener("blur", async () => {
   const cep = document.getElementById("cep").value.replace(/\D/g, "");
   if (cep.length !== 8) return;
 
   try {
-    const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    const dados = await resposta.json();
+    const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const d = await r.json();
+    if (d.erro) return;
 
-    if (dados.erro) return;
-
-    document.getElementById("endereco").value = dados.logradouro || "";
-    document.getElementById("cidade").value = dados.localidade || "";
-    document.getElementById("estado").value = dados.uf || "";
-
-  } catch (e) {
-    console.error("Erro ao buscar CEP:", e);
-  }
+    document.getElementById("endereco").value = d.logradouro || "";
+    document.getElementById("cidade").value = d.localidade || "";
+    document.getElementById("estado").value = d.uf || "";
+  } catch {}
 });
 
-// ===============================
-// 🎭 Máscaras automáticas (sem alterar o design)
-// ===============================
+// ------------------
+// Máscaras
+// ------------------
 document.addEventListener("DOMContentLoaded", () => {
-  const maskOptions = {
-    showMaskOnHover: false,
-    showMaskOnFocus: true,
-    jitMasking: true,
-    clearIncomplete: false,
-    placeholder: "",
-  };
+  const opt = { showMaskOnHover: false, showMaskOnFocus: true, jitMasking: true };
 
-  // CPF
-  const cpfInput = document.getElementById("cpf");
-  if (cpfInput) Inputmask("999.999.999-99", maskOptions).mask(cpfInput);
+  const masks = [
+    ["cpf", "999.999.999-99"],
+    ["cep", "99999-999"],
+    ["celular", "(99) 99999-9999"],
+    ["fixo", "(99) 9999-9999"],
+  ];
 
-  // CEP
-  const cepInput = document.getElementById("cep");
-  if (cepInput) Inputmask("99999-999", maskOptions).mask(cepInput);
-
-  // Celular
-  const celularInput = document.getElementById("celular");
-  if (celularInput) Inputmask("(99) 99999-9999", maskOptions).mask(celularInput);
-
-  // Telefone fixo
-  const fixoInput = document.getElementById("fixo");
-  if (fixoInput) Inputmask("(99) 9999-9999", maskOptions).mask(fixoInput);
+  masks.forEach(([id, mask]) => {
+    const el = document.getElementById(id);
+    if (el) Inputmask(mask, opt).mask(el);
+  });
 });
