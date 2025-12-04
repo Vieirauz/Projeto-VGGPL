@@ -5,89 +5,131 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cadastro</title>
+
+  <!-- CSS minimalista -->
   <link rel="stylesheet" href="css/cadastro.css" />
   <link rel="icon" href="imagem/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
-  <header>
-    <div id="MenuFixo" class="Menu">
-      <a class="Logo" href="indexfoundmanga.html">
-        <img class="logofaixa" src="imagem/LOGO.PP.jpeg" alt="Logo" />
-      </a>
-    </div>
-    <div class="right-section">
-      <a href="login.html" class="login-b">Login</a>
-    </div>
+
+  <header class="header">
+    <a class="logo" href="indexfoundmanga.html">
+      <img src="imagem/LOGO.PP.jpeg" alt="Logo">
+    </a>
+
+    <a href="login.html" class="btn-login">Login</a>
   </header>
 
-  <form id="cadastroForm" onsubmit="validarCadastro(event)">
-    <div class="login-container">
-      <h1>Cadastro</h1>
+  <section class="container">
+    <form id="cadastroForm" class="form" onsubmit="validarCadastro(event)">
+      <h1>Crie sua conta</h1>
+      <p class="subtitle">Preencha os dados abaixo para continuar</p>
+
       <div id="mensagem" class="error"></div>
 
-      <input type="text" id="nome" name="nome" maxlength="80" placeholder="Nome Completo" class="cadastro-nome" required />
-
-      <label class="label-data_n">Data de Nascimento:
-        <input type="date" id="nascimento" name="nascimento" class="cadastro-d_nascimento" />
-      </label>
-
-      <label class="label-gen">Gênero:
-        <select id="sexo" name="sexo" class="cadastro-genero">
-          <option value="">Selecione</option>
-          <option>Masculino</option>
-          <option>Feminino</option>
-          <option>Outro</option>
-        </select>
-      </label>
-
-      <input type="text" id="nomeMaterno" name="nomeMaterno" maxlength="80" placeholder="Nome Materno" class="cadastro-nome_materno" />
-      <input type="text" id="cpf" name="cpf" maxlength="14" placeholder="CPF" class="cadastro-cpf" />
-      <input type="email" id="email" name="email" placeholder="E-mail" class="cadastro-email" />
-
-      <label class="label-tel_celular">Telefone Celular:
-        <input type="text" id="celular" name="celular" placeholder="(+55)xxxxxxx-xxxx" minlength="11" class="cadastro-tel_celular" />
-      </label>
-
-      <label class="label-tel_fixo">Telefone Fixo:
-        <input type="text" id="fixo" name="fixo" placeholder="(+55)xxxxxx-xxxx" maxlength="17" class="cadastro-tel_fixo" />
-      </label>
-
-      <input type="text" id="cep" name="cep" maxlength="9" placeholder="CEP" class="cadastro-cep" />
-      <input type="text" id="endereco" name="endereco" placeholder="Endereço" required />
-      <input type="text" id="cidade" name="cidade" placeholder="Cidade" class="cadastro-cidade" />
-      <input type="text" id="estado" name="estado" placeholder="Estado" class="cadastro-estado" />
-      <input type="text" id="login" name="login" minlength="6" maxlength="15" placeholder="Login" class="cadastro-login" /><br />
-
-      <div class="flex-row">
-        <input type="password" id="senha" name="senha" minlength="8" placeholder="Senha" class="cadastro-senha" />
-        <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme a senha" class="cadastro-conf_senha" />
+      <div class="input-group">
+        <label>Nome Completo</label>
+        <input type="text" id="nome" name="nome" required maxlength="80">
       </div>
 
-      <div class="buttons">
-        <button type="submit" class="submit-btn">Enviar</button>
-        <button type="reset" class="reset-btn">Limpar</button>
+      <div class="row">
+        <div class="input-group">
+          <label>Data de Nascimento</label>
+          <input type="date" id="nascimento" name="nascimento">
+        </div>
+
+        <div class="input-group">
+          <label>Gênero</label>
+          <select id="sexo" name="sexo">
+            <option value="">Selecione</option>
+            <option>Masculino</option>
+            <option>Feminino</option>
+            <option>Outro</option>
+          </select>
+        </div>
       </div>
-    </div>
-  </form>
+
+      <div class="input-group">
+        <label>Nome Materno</label>
+        <input type="text" id="nomeMaterno" maxlength="80">
+      </div>
+
+      <div class="input-group">
+        <label>CPF</label>
+        <input type="text" id="cpf" maxlength="14">
+      </div>
+
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="email">
+      </div>
+
+      <div class="row">
+        <div class="input-group">
+          <label>Celular</label>
+          <input type="text" id="celular">
+        </div>
+
+        <div class="input-group">
+          <label>Telefone Fixo</label>
+          <input type="text" id="fixo">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-group">
+          <label>CEP</label>
+          <input type="text" id="cep" maxlength="9">
+        </div>
+
+        <div class="input-group">
+          <label>Cidade</label>
+          <input type="text" id="cidade">
+        </div>
+
+        <div class="input-group">
+          <label>Estado</label>
+          <input type="text" id="estado">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Endereço</label>
+        <input type="text" id="endereco">
+      </div>
+
+      <div class="input-group">
+        <label>Login</label>
+        <input type="text" id="login" minlength="6" maxlength="15">
+      </div>
+
+      <div class="row">
+        <div class="input-group">
+          <label>Senha</label>
+          <input type="password" id="senha">
+        </div>
+
+        <div class="input-group">
+          <label>Confirmar Senha</label>
+          <input type="password" id="confirmarSenha">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Cadastrar</button>
+      <button type="reset" class="btn-reset">Limpar</button>
+    </form>
+  </section>
 
   <footer class="footer">
-    <div class="footer-container">
-      <p>© <span id="anoAtual"></span> Portal das Páginas - Todos os direitos reservados.</p>
-      <p>
-        Email: <a href=""></a> |
-        Telefone: <a href=""></a>
-      </p>
-      <p>
-        Siga-me:
-        <a href="" target="_blank">LinkedIn</a> |
-        <a href="https://github.com/Foundneptune" target="_blank">GitHub</a> |
-        <a href="" target="_blank">Twitter</a>
-      </p>
-    </div>
+    <p>© <span id="anoAtual"></span> Portal das Páginas</p>
   </footer>
 
+  <!-- Máscaras -->
   <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+
+  <!-- JS minimalista -->
   <script src="JavaScript/cadastro.js"></script>
+
 </body>
 </html>
